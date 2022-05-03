@@ -29,7 +29,7 @@ c)	Difference in the scores (e.g., PR1= [ [‘a’,23000], [’b’,18], [’c�
 
 What we did was to create a measure that is able, given two pageRanks PR1 and PR2, to summarize in one scalar all these aspects:
 
-**_similarity= α orderSimilarity + (1-α)(1-numericalChange)_*
+**_similarity= α orderSimilarity + (1-α)(1-numericalChange)_**
 
 **_orderSimilarity_** is defined as the Rank Biased Overlap measure . We choose to use this measure of similarity because it does not require the two rankings to be conjoint (i.e., with the same elements). We set the p parameters of RBO to 0.9. This part answers concept a).
 
@@ -51,7 +51,9 @@ It should be noticed that this measure is not always commutative. More precisely
 ### Convergence of the algorithm
 
 Having this measure of similarity, once the pageRanks have been calculated for different values of the parameters (_resampling probability_ and the _maximum number of iterations_ in our case), each pageRank is compared to its 4 closest neigbhors (based on the values of the parameters) and the average of the similarity between the current instance of the pageRanks is saved.
-In oder words, having this similarity measure, we are able to find, for each pair of _resampling probability_ and _maximum number of iterations_, how similar to the neighbors was the pageRank they identified. If an instance of pageRank is very similar to the close ones, it means that the algorithm is converging. Thanks to this idea, it's possible to systematically define the convergence of the algorithm simply defining a threshold of similarity after which the algorithm is assumed to be converging. After a few attempts it has been set to 0.925.
+In oder words, having this similarity measure, we are able to find, for each pair of _resampling probability_ and _maximum number of iterations_, how similar to the neighbors was the pageRank they identified. If an instance of pageRank is very similar to the close ones, it means that the algorithm is converging. 
+
+Thanks to this idea, it's possible to systematically define the convergence of the algorithm simply defining a threshold of similarity after which the algorithm is assumed to be converging. After a few attempts it has been set to 0.925.
 The idea is that, for all the couples of parameters that overtake the threshold, the values to be used are the ones for which the time of execution is lower.
 
 ### Implementation
