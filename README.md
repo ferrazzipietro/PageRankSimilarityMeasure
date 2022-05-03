@@ -8,12 +8,15 @@ To run this project IntelliJ is suggested as java IDE.
 
 ### Abstract
 
-PageRank is a common algorithm proposed by Google to evaluate the impact of each page in the net based on the number of links referring to that page and the "importance" of the quoting page.
-In the Spark's contest, pageRank is often calculated on the top of Graphs to generate a ranking of the nodes. In general, the issue is the choice of the parameters to be set to efficiently obtain results. In the specific Spark's GraphX PageRank implementation, we will discuss about the _resampling probability_ and the _maximum number of iterations_.
+PageRank is a common algorithm proposed by Google to evaluate the impact of each page in the net based on the number of links referring to that page and the "importance" of the quoting page. 
+In the Spark's contest, pageRank is often calculated on the top of Graphs to generate a ranking of the nodes. In many applications the interested is in the top part of the ranking (in what follows, we consider the top 10).
+
+In general, the issue is the choice of the parameters to be set to efficiently obtain results. In the specific Spark's GraphX PageRank implementation, we will discuss about the _resampling probability_ and the _maximum number of iterations_.
 
 The problem is that it looks like there is a **lack of metrics** to define when the algorithm is converging. In other words, there is no a well-known way to define if two instances of pageRanks calculated on the same data using different parameters are similar enough to say that we can stop to look for better parameters to be used since the results are convergent.
 
 What I tried to do here is an implementation of a naive measure of similarity between page ranks.
+
 
 ### Similarity between pageRanks
 
@@ -24,19 +27,32 @@ c)	Difference in the scores (e.g., PR1= [ [‘a’,23000], [’b’,18], [’c�
 
 What we did was to create a measure that is able, given two pageRanks PR1 and PR2, to summarize in one scalar all these aspects:
 
-**_similarity= α* orderSimilarity+(1-α)*(1-numericalChange)_**
+**_similarity= α orderSimilarity + (1-α)(1-numericalChange)_*
 
 **_orderSimilarity_** is defined as the Rank Biased Overlap measure . We choose to use this measure of similarity because it does not require the two rankings to be conjoint (i.e., with the same elements). We set the p parameters of RBO to 0.9. This part answers concept a).
 
 **_numericalChange_** is defined as the sum of the squares of the scores of each page p that is the PR1 minus the score of p in PR2 (if present) or minus 0 (if not present), then normalized to assume values in [0,1].
 For example, having PR1= [ [‘a’,27], [’b’,16], [’c’,10]] and PR2 = [ [‘a’,23], [’f’,18], [’c’,16]],
 
-numericChang=(〖{(score_(a_PR1 )-score_(a_PR2 ) )〗^2+(score_(b_PR1 )-0)^2+(score_(c_PR1 )-score_(c_PR2 ) )^2})/(∑_(x page in PR1)▒〖score_x^2 〗)
+numericChang=( (score_(a_PR1 )-score_(a_PR2 ))^2 + (score_(b_PR1 )-0)^2 + (score_(c_PR1 )-score_(c_PR2 ))^2 )  / _den_
 
-=〖((27-23)〗^2+(16)^2-(10-16)^2)/1085=0.28
+where  _den_ = (∑_(x page in PR1)(score_x^2))
 
-**_alpha_** is a parameter in [0,1] to give different weights to the two parts. We set it to 0.3 to equally balance the 3 sources of similarity a), b) and c).
+-> numericChang = ((27-23)^2 + (16)^2 - (10-16)^2) / 1085 = 0.28
+
+**α** is a parameter in [0,1] to give different weights to the two parts. We set it to 0.3 to equally balance the 3 sources of similarity a), b) and c).
 
 
+It should be noticed that this measure is not always commutative. More precisely, it is commutative only if all the pages contained in the first pageRank are contained also in the second one (this is always the case when working with the all pageRank and not only with the top10).
+
+
+### Convergence of the algorithm
+
+Having this measure of similarity, once the pageRanks have been calculated for different values of the parameters (_resampling probability_ and the _maximum number of iterations_ in our case), each pageRank is compared to its 4 closest neigbhors (based on the values of the parameters) and the average of the similarity between the current instance of the pageRanks is saved.
+In oder words, having this similarity measure, we are able to find, for each pair of _resampling probability_ and _maximum number of iterations_, how similar to the neighbors was the pageRank they identified. If an instance of pageRank is very similar to the close ones, it means that the algorithm is converging. Thanks to this idea, it's possible to systematically define the convergence of the algorithm simply defining a threshold of similarity after which the algorithm is assumed to be converging. After a few attempts it has been set to 0.925.
+
+### Implementation
+
+The repository should be open as an Intellij Project. The actual implementaion of the t src/main/java/convergence_PageRank. For more details go to the comments.
 
 
