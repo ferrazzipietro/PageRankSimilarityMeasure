@@ -1,9 +1,11 @@
 # PageRankSimilarityMeasure
-A measure of similarity to compare instances of pageRanks built on the same graph (data) generated using different parameters
+A measure of similarity to compare instances of pageRanks built on the same graph (data) generated using different parameters and eventually rigorously define the convergence of pageRank algorithm (tuning of the parameters).
+
 
 ### Tools Required
 
 To run this project IntelliJ is suggested as java IDE.
+For visualization of the results, R is needed.
 
 
 ### Abstract
@@ -50,9 +52,21 @@ It should be noticed that this measure is not always commutative. More precisely
 
 Having this measure of similarity, once the pageRanks have been calculated for different values of the parameters (_resampling probability_ and the _maximum number of iterations_ in our case), each pageRank is compared to its 4 closest neigbhors (based on the values of the parameters) and the average of the similarity between the current instance of the pageRanks is saved.
 In oder words, having this similarity measure, we are able to find, for each pair of _resampling probability_ and _maximum number of iterations_, how similar to the neighbors was the pageRank they identified. If an instance of pageRank is very similar to the close ones, it means that the algorithm is converging. Thanks to this idea, it's possible to systematically define the convergence of the algorithm simply defining a threshold of similarity after which the algorithm is assumed to be converging. After a few attempts it has been set to 0.925.
+The idea is that, for all the couples of parameters that overtake the threshold, the values to be used are the ones for which the time of execution is lower.
 
 ### Implementation
 
 The repository should be open as an Intellij Project. The actual implementaion of the t src/main/java/convergence_PageRank. For more details go to the comments.
+
+
+### Visualization of the results
+Visualization_of_similarity.R contains the code to visualize the output of the optimization. An example can be seen at http://rpubs.com/ferrazzipietro/895710.
+
+## Resources
+
+RBO measure https://towardsdatascience.com/rbo-v-s-kendall-tau-to-compare-ranked-lists-of-items-8776c5182899
+PageRank source code https://github.com/apache/spark/blob/v3.2.1/graphx/src/main/scala/org/apache/spark/graphx/lib/PageRank.scala
+
+
 
 
