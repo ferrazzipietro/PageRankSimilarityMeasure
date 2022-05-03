@@ -23,9 +23,12 @@ What I tried to do here is an implementation of a naive measure of similarity be
 ### Similarity between pageRanks
 
 To calculate the similarity of two pageRanks there are three concepts to consider:
-a)	Differences in the order of the pages present in the ranking (e.g., PR1= [ [‘a’,23], [’b’,18], [’c’,16] ] and PR2 = [ [‘b’,23],[’a’,18],[’c’,16] ]. The different order should be considered when comparing the two of them).
-b)	Differences in which pages are in the top 10 (e.g., PR1= [ [‘a’,23], [’b’,18], [’c’,16] ] and PR2 = [ [‘a’,23], [’f’,18], [’c’,16] ]. The fact that there are different elements should be considered).
-c)	Difference in the scores (e.g., PR1= [ [‘a’,23000], [’b’,18], [’c’,16] ] and PR2 = [ [‘a’,23],[’b’, 18],[’c’, 16]]. These two rankings are very different in terms of the scores that have been assigned even if the order is the same).
+
+**a)**	Differences in the order of the pages present in the ranking (e.g., PR1= [ [‘a’,23], [’b’,18], [’c’,16] ] and PR2 = [ [‘b’,23],[’a’,18],[’c’,16] ]. The different order should be considered when comparing the two of them).
+
+**b)**	Differences in which pages are in the top 10 (e.g., PR1= [ [‘a’,23], [’b’,18], [’c’,16] ] and PR2 = [ [‘a’,23], [’f’,18], [’c’,16] ]. The fact that there are different elements should be considered).
+
+**c)**	Difference in the scores (e.g., PR1= [ [‘a’,23000], [’b’,18], [’c’,16] ] and PR2 = [ [‘a’,23],[’b’, 18],[’c’, 16]]. These two rankings are very different in terms of the scores that have been assigned even if the order is the same).
 
 What we did was to create a measure that is able, given two pageRanks PR1 and PR2, to summarize in one scalar all these aspects:
 
